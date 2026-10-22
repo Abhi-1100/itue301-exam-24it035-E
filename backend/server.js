@@ -1,5 +1,7 @@
 // server.js - Main entry point for the DriveEasy Express backend API
-require('dotenv').config(); // WHY: Loads environment variables from .env into process.env at startup
+const path = require('path');
+// WHY: Explicitly resolve .env path using __dirname so it works whether run from root or backend directory
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -26,7 +28,7 @@ app.use(requestLogger);
 // 2. WHY: CORS middleware permits the Vite React frontend (http://localhost:5173) to communicate with this backend
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
     credentials: true
   })
 );

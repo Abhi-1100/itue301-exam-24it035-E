@@ -46,8 +46,13 @@ const LoginPage = () => {
       // WHY: Navigate customer directly to fleet browsing page upon successful authentication
       navigate('/fleet');
     } catch (error) {
-      // WHY: Extract backend error message or provide fallback
-      const message = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      // WHY: Distinguish between backend validation/credential error vs server offline error
+      let message = 'Login failed. Please check your credentials.';
+      if (error.response?.data?.message) {
+        message = error.response.data.message;
+      } else if (error.request && !error.response) {
+        message = `Cannot reach backend API at ${API_URL}. Please ensure the server is running on port 5000.`;
+      }
       setErrorMessage(message);
     } finally {
       setLoading(false);

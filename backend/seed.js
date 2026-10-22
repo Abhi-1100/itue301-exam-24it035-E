@@ -1,5 +1,7 @@
 // seed.js - Database seeder script to populate initial demo data
-require('dotenv').config();
+const path = require('path');
+// WHY: Explicitly resolve .env path using __dirname so it works whether run from root or backend directory
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const mongoose = require('mongoose');
 const Customer = require('./models/Customer');
 const Vehicle = require('./models/Vehicle');

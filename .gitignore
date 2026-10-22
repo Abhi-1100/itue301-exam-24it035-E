@@ -19,3 +19,7 @@ frontend/dist/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local Checkpoint ZIP Archives
+_checkpoints/
+
