@@ -1,0 +1,21 @@
+# Dependency directories
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Environment variable files
+.env
+backend/.env
+frontend/.env
+*.local
+
+# Production build artifacts
+dist/
+build/
+frontend/dist/
+
+# Operating System & IDE cache
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
