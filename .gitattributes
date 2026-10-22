@@ -1,0 +1,8 @@
+# Tell GitHub Linguist to ignore CLI agent skills and mark them as vendored/tooling
+# This ensures GitHub Language Statistics accurately reflect your MERN stack (JavaScript / CSS / HTML)
+
+.agents/** linguist-vendored=true
+.agents/** linguist-detectable=false
+design-system/** linguist-documentation=true
+scripts/** linguist-vendored=true
+*.bat linguist-vendored=true
