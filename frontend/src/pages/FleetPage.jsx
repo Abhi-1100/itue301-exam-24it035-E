@@ -1,8 +1,9 @@
-// src/pages/FleetPage.jsx - Fleet browsing, client-side filtering, and booking drawer
+// src/pages/FleetPage.jsx - Fleet browsing, client-side filtering, and booking drawer (UI/UX Pro Max Enhanced)
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import VehicleCard from '../components/VehicleCard';
 import { useAuth } from '../context/AuthContext';
+import { IconCheck, IconAlert, IconCalendar, IconCarLogo } from '../components/Icons';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
@@ -140,32 +141,38 @@ const FleetPage = () => {
     <div>
       {/* Toast Notification */}
       {toast && (
-        <div className="toast-container">
+        <div className="toast-container" role="status" aria-live="polite">
           <div className={`toast toast-${toast.type}`}>
-            <span>{toast.type === 'success' ? '✅' : '⚠️'}</span>
-            <span>{toast.message}</span>
+            <span className="toast-icon">
+              {toast.type === 'success' ? <IconCheck size={18} /> : <IconAlert size={18} />}
+            </span>
+            <span className="toast-text">{toast.message}</span>
           </div>
         </div>
       )}
 
       {/* Hero Header */}
       <section className="hero-header">
-        <span className="hero-pill">Self-Drive Freedom</span>
-        <h1>Drive Your Way Across India</h1>
-        <p>
+        <div className="hero-pill">
+          <IconCarLogo size={14} />
+          <span>Self-Drive Freedom Across India</span>
+        </div>
+        <h1 className="hero-title">Experience Pure Driving Pleasure</h1>
+        <p className="hero-subtitle">
           Choose from our pristine fleet of verified hatchbacks, sedans, and SUVs. Transparent
-          rates, zero hidden fees, and instant booking confirmation.
+          rates, zero hidden fees, and instant online confirmation.
         </p>
 
         {/* Task 4: Client-side filter pills */}
-        <div className="filter-bar">
+        <div className="filter-bar" role="toolbar" aria-label="Vehicle type filters">
           {['All', 'Hatchback', 'Sedan', 'SUV'].map((type) => (
             <button
               key={type}
               onClick={() => setSelectedType(type)}
               className={`filter-pill ${selectedType === type ? 'active' : ''}`}
+              aria-pressed={selectedType === type}
             >
-              {type === 'All' ? '🚗 All Vehicles' : type}
+              {type === 'All' ? 'All Vehicles' : type}
             </button>
           ))}
         </div>
@@ -177,14 +184,16 @@ const FleetPage = () => {
         {loading && (
           <div className="spinner-container">
             <div className="spinner"></div>
-            <p style={{ color: 'var(--text-muted)' }}>Loading premium fleet...</p>
+            <p className="spinner-caption">Loading premium fleet...</p>
           </div>
         )}
 
         {/* Error State with Retry Button */}
         {error && !loading && (
           <div className="state-box">
-            <div className="state-icon">⚠️</div>
+            <div className="state-icon-wrapper">
+              <IconAlert size={36} className="text-rose" />
+            </div>
             <h3>Unable to Load Vehicles</h3>
             <p>{error}</p>
             <button onClick={fetchVehicles} className="btn-retry">
@@ -198,7 +207,9 @@ const FleetPage = () => {
           <>
             {filteredVehicles.length === 0 ? (
               <div className="state-box">
-                <div className="state-icon">🔍</div>
+                <div className="state-icon-wrapper">
+                  <IconCarLogo size={36} className="text-cyan" />
+                </div>
                 <h3>No vehicles found</h3>
                 <p>No vehicles match the "{selectedType}" category at the moment.</p>
                 <button onClick={() => setSelectedType('All')} className="btn-retry">
@@ -226,7 +237,7 @@ const FleetPage = () => {
       {/* Task 2: Slide-in Booking Drawer */}
       {selectedVehicle && (
         <div className="drawer-overlay" onClick={handleCloseBooking}>
-          <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
+          <div className="drawer-panel" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
             <div className="drawer-header">
               <h2>Reserve Vehicle</h2>
               <button onClick={handleCloseBooking} className="btn-close" aria-label="Close booking drawer">
@@ -238,18 +249,25 @@ const FleetPage = () => {
             <div className="selected-car-banner">
               <div className="model-name">{selectedVehicle.model}</div>
               <div className="meta-row">
-                <span>Category: {selectedVehicle.type}</span>
-                <span>₹{selectedVehicle.pricePerDay?.toLocaleString('en-IN')}/day</span>
+                <span className={`type-badge type-${selectedVehicle.type.toLowerCase()}`}>
+                  {selectedVehicle.type}
+                </span>
+                <span className="price-tag-highlight">
+                  ₹{selectedVehicle.pricePerDay?.toLocaleString('en-IN')}/day
+                </span>
               </div>
             </div>
 
             <form onSubmit={handleConfirmBooking}>
               <div className="form-group">
-                <label htmlFor="pickup-date">Pickup Date</label>
+                <label htmlFor="pickup-date">
+                  <IconCalendar size={14} />
+                  <span>Pickup Date</span>
+                </label>
                 <input
                   id="pickup-date"
                   type="date"
-                  className="form-input"
+                  className="form-input font-mono"
                   min={new Date().toISOString().split('T')[0]}
                   value={pickupDate}
                   onChange={(e) => setPickupDate(e.target.value)}
@@ -258,11 +276,14 @@ const FleetPage = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="return-date">Return Date</label>
+                <label htmlFor="return-date">
+                  <IconCalendar size={14} />
+                  <span>Return Date</span>
+                </label>
                 <input
                   id="return-date"
                   type="date"
-                  className="form-input"
+                  className="form-input font-mono"
                   min={pickupDate || new Date().toISOString().split('T')[0]}
                   value={returnDate}
                   onChange={(e) => setReturnDate(e.target.value)}
@@ -274,15 +295,15 @@ const FleetPage = () => {
               <div className="cost-preview-box">
                 <div className="cost-row">
                   <span>Daily Rate:</span>
-                  <span>₹{selectedVehicle.pricePerDay?.toLocaleString('en-IN')}</span>
+                  <span className="tabular-num">₹{selectedVehicle.pricePerDay?.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="cost-row">
                   <span>Rental Duration:</span>
-                  <span>{days > 0 ? `${days} day${days > 1 ? 's' : ''}` : 'Select dates'}</span>
+                  <span className="tabular-num">{days > 0 ? `${days} day${days > 1 ? 's' : ''}` : 'Select dates'}</span>
                 </div>
                 <div className="cost-total">
                   <span>Estimated Total:</span>
-                  <span style={{ color: 'var(--accent-cyan)' }}>
+                  <span className="total-highlight tabular-num">
                     ₹{totalCost.toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -293,7 +314,14 @@ const FleetPage = () => {
                 className="btn-confirm-booking"
                 disabled={bookingLoading || days <= 0}
               >
-                {bookingLoading ? 'Processing Reservation...' : 'Confirm & Reserve Vehicle'}
+                {bookingLoading ? (
+                  <span className="btn-loading-flex">
+                    <span className="btn-spinner"></span>
+                    <span>Processing Reservation...</span>
+                  </span>
+                ) : (
+                  'Confirm & Reserve Vehicle'
+                )}
               </button>
             </form>
           </div>

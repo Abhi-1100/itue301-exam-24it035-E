@@ -1,8 +1,9 @@
-// src/pages/LoginPage.jsx - Customer login screen using email and driving license number
+// src/pages/LoginPage.jsx - Customer login screen (UI/UX Pro Max Enhanced)
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { IconCarLogo, IconKey, IconAlert } from '../components/Icons';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
@@ -63,20 +64,23 @@ const LoginPage = () => {
     <div className="login-wrapper">
       <div className="login-card">
         <div className="login-header">
-          <div className="logo-badge">🚗</div>
+          <div className="login-emblem">
+            <IconCarLogo size={36} className="login-emblem-svg" />
+          </div>
           <h1>Welcome to DriveEasy</h1>
-          <p>India's Premium Self-Drive Car Rental Service</p>
+          <p>India's Premium Self-Drive Car Rental Platform</p>
         </div>
 
         {/* Demo Credentials Box for Examiner / Viva Demonstration */}
         <div className="demo-credentials-box">
           <div className="demo-title">
-            <span>🔑</span>
+            <IconKey size={16} />
             <span>Demo Examiner Credentials (1-Click Fill)</span>
           </div>
           <div className="demo-item">
-            <strong>Rahul Sharma:</strong> rahul@example.com (DL-0420110012345)
-            <br />
+            <div>
+              <strong>Rahul Sharma:</strong> <code>rahul@example.com</code> (<code>DL-0420110012345</code>)
+            </div>
             <button
               type="button"
               className="btn-quickfill"
@@ -86,8 +90,9 @@ const LoginPage = () => {
             </button>
           </div>
           <div className="demo-item">
-            <strong>Priya Patel:</strong> priya@example.com (MH-0220190098765)
-            <br />
+            <div>
+              <strong>Priya Patel:</strong> <code>priya@example.com</code> (<code>MH-0220190098765</code>)
+            </div>
             <button
               type="button"
               className="btn-quickfill"
@@ -100,16 +105,9 @@ const LoginPage = () => {
 
         {/* Error notification */}
         {errorMessage && (
-          <div style={{
-            background: 'rgba(239, 68, 68, 0.15)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            color: '#f87171',
-            padding: '0.75rem 1rem',
-            borderRadius: '8px',
-            fontSize: '0.88rem',
-            marginBottom: '1.25rem'
-          }}>
-            ⚠️ {errorMessage}
+          <div className="login-alert-error" role="alert">
+            <IconAlert size={18} />
+            <span>{errorMessage}</span>
           </div>
         )}
 
@@ -123,6 +121,7 @@ const LoginPage = () => {
               placeholder="e.g. rahul@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               required
             />
           </div>
@@ -132,7 +131,7 @@ const LoginPage = () => {
             <input
               id="login-license"
               type="text"
-              className="form-input"
+              className="form-input font-mono"
               placeholder="e.g. DL-0420110012345"
               value={licenseNumber}
               onChange={(e) => setLicenseNumber(e.target.value)}
@@ -145,7 +144,14 @@ const LoginPage = () => {
             className="login-btn"
             disabled={loading}
           >
-            {loading ? 'Authenticating...' : 'Sign In to DriveEasy'}
+            {loading ? (
+              <span className="btn-loading-flex">
+                <span className="btn-spinner"></span>
+                <span>Authenticating...</span>
+              </span>
+            ) : (
+              'Sign In to DriveEasy'
+            )}
           </button>
         </form>
       </div>

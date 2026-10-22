@@ -1,8 +1,9 @@
-// src/pages/MyBookingsPage.jsx - Displays customer's reservations with status badges and cancellation
+// src/pages/MyBookingsPage.jsx - Customer reservations dashboard (UI/UX Pro Max Enhanced)
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { IconCheck, IconAlert, IconCalendar, IconCarLogo } from '../components/Icons';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
@@ -88,10 +89,12 @@ const MyBookingsPage = () => {
     <div className="container">
       {/* Toast Notification */}
       {toast && (
-        <div className="toast-container">
+        <div className="toast-container" role="status" aria-live="polite">
           <div className={`toast toast-${toast.type}`}>
-            <span>{toast.type === 'success' ? '✅' : '⚠️'}</span>
-            <span>{toast.message}</span>
+            <span className="toast-icon">
+              {toast.type === 'success' ? <IconCheck size={18} /> : <IconAlert size={18} />}
+            </span>
+            <span className="toast-text">{toast.message}</span>
           </div>
         </div>
       )}
@@ -99,7 +102,7 @@ const MyBookingsPage = () => {
       <div className="page-header-row">
         <div>
           <h1 className="page-title">My Bookings</h1>
-          <p style={{ color: 'var(--text-muted)' }}>
+          <p className="page-subtitle">
             Active and past rental reservations for {customer?.name}
           </p>
         </div>
@@ -109,14 +112,16 @@ const MyBookingsPage = () => {
       {loading && (
         <div className="spinner-container">
           <div className="spinner"></div>
-          <p style={{ color: 'var(--text-muted)' }}>Retrieving your booking history...</p>
+          <p className="spinner-caption">Retrieving your booking history...</p>
         </div>
       )}
 
       {/* Error state */}
       {error && !loading && (
         <div className="state-box">
-          <div className="state-icon">⚠️</div>
+          <div className="state-icon-wrapper">
+            <IconAlert size={36} className="text-rose" />
+          </div>
           <h3>Failed to Load Bookings</h3>
           <p>{error}</p>
           <button onClick={fetchMyBookings} className="btn-retry">
@@ -128,10 +133,12 @@ const MyBookingsPage = () => {
       {/* Empty state */}
       {!loading && !error && bookings.length === 0 && (
         <div className="state-box">
-          <div className="state-icon">🏷️</div>
+          <div className="state-icon-wrapper">
+            <IconCarLogo size={36} className="text-cyan" />
+          </div>
           <h3>No Bookings Found</h3>
           <p>You haven't reserved any vehicles yet. Explore our fleet and take a test drive!</p>
-          <Link to="/fleet" className="btn-retry" style={{ textDecoration: 'none', display: 'inline-block' }}>
+          <Link to="/fleet" className="btn-retry inline-block">
             Browse Fleet
           </Link>
         </div>
@@ -149,35 +156,42 @@ const MyBookingsPage = () => {
                     <h3 className="booking-vehicle-name">
                       {vehicle.model || 'Rental Vehicle'}
                     </h3>
-                    <span className="booking-id-tag">ID: {booking._id}</span>
+                    <span className="booking-id-tag">REF: {booking._id}</span>
                   </div>
-                  {/* Colored status chip */}
+                  {/* Colored status chip with pulse dot */}
                   <span className={`status-chip status-${booking.status}`}>
-                    {booking.status}
+                    <span className="status-dot"></span>
+                    <span>{booking.status}</span>
                   </span>
                 </div>
 
                 <div className="booking-dates-box">
                   <div className="date-line">
                     <span>Category:</span>
-                    <strong>{vehicle.type || 'N/A'}</strong>
+                    <strong className="text-highlight">{vehicle.type || 'N/A'}</strong>
                   </div>
                   <div className="date-line">
-                    <span>Pickup Date:</span>
-                    <strong>{formatDate(booking.pickupDate)}</strong>
+                    <span className="flex-center-gap">
+                      <IconCalendar size={13} />
+                      <span>Pickup:</span>
+                    </span>
+                    <strong className="tabular-num">{formatDate(booking.pickupDate)}</strong>
                   </div>
                   <div className="date-line">
-                    <span>Return Date:</span>
-                    <strong>{formatDate(booking.returnDate)}</strong>
+                    <span className="flex-center-gap">
+                      <IconCalendar size={13} />
+                      <span>Return:</span>
+                    </span>
+                    <strong className="tabular-num">{formatDate(booking.returnDate)}</strong>
                   </div>
                   <div className="date-line">
-                    <span>Booked On:</span>
-                    <strong>{formatDate(booking.createdAt)}</strong>
+                    <span>Reserved On:</span>
+                    <strong className="tabular-num text-muted-subtle">{formatDate(booking.createdAt)}</strong>
                   </div>
                 </div>
 
                 <div className="booking-actions">
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  <span className="customer-info-tag">
                     Customer: {customer?.name}
                   </span>
 
@@ -187,11 +201,12 @@ const MyBookingsPage = () => {
                       onClick={() => handleCancelBooking(booking._id)}
                       disabled={cancellingId === booking._id}
                       className="btn-cancel-booking"
+                      aria-label="Cancel this reservation"
                     >
                       {cancellingId === booking._id ? 'Cancelling...' : 'Cancel Booking'}
                     </button>
                   ) : (
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+                    <span className="action-closed-tag">
                       No actions available
                     </span>
                   )}
